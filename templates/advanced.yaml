@@ -1,0 +1,48 @@
+port: 7890
+socks-port: 7891
+allow-lan: false
+bind-address: "*"
+mode: rule
+log-level: info
+ipv6: false
+
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://1.1.1.1/dns-query
+    - tls://dns.google:853
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+proxy-groups:
+  - name: "Proxy"
+    type: select
+    proxies: ["Auto", "HK-1", "JP-1", "US-1", "DIRECT"]
+  - name: "Auto"
+    type: url-test
+    proxies: ["HK-1", "JP-1", "US-1"]
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+  - name: "Streaming"
+    type: select
+    proxies: ["Netflix-Node", "YouTube-Node", "Proxy"]
+  - name: "Gaming"
+    type: select
+    proxies: ["JP-Game", "HK-Game", "Proxy"]
+
+rules:
+  - DOMAIN-SUFFIX,google.com,Proxy
+  - DOMAIN-SUFFIX,googleapis.com,Proxy
+  - DOMAIN-KEYWORD,github,Proxy
+  - DOMAIN-SUFFIX,netflix.com,Streaming
+  - DOMAIN-SUFFIX,youtube.com,Streaming
+  - DOMAIN-SUFFIX,baidu.com,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,Auto
