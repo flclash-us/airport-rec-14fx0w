@@ -1,0 +1,1 @@
+https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
